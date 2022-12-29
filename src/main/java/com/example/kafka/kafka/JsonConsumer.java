@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class JsonConsumer {
@@ -42,5 +44,21 @@ public class JsonConsumer {
 
        taskRepository.save(task);
 
+    }
+
+    @KafkaListener(topics ="task_json",groupId = "group")
+    public List<Task> getTask(Integer id){
+       return taskRepository.findAllByUid(id);
+
+    }
+
+    @KafkaListener(topics ="javat",groupId = "group")
+    public void updateTask(Integer id, String status) throws Exception {
+
+        Task t = taskRepository.findByTaskId(id);
+        t.setStatus(status);
+
+
+      taskRepository.save(t);
     }
 }
