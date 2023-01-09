@@ -5,9 +5,11 @@ import com.example.kafka.model.User;
 import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
@@ -22,6 +24,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+//import org.springframework.web.reactive.function.client.WebClient;
+//import reactor.core.publisher.Flux;
+
 
 @Service
 public class JsonProducer {
@@ -29,15 +34,13 @@ public class JsonProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonProducer.class);
 
-    private KafkaTemplate<String, User> kafkaTemplate;
+
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
 
-
-
-
-
-    public JsonProducer(KafkaTemplate<String, User> kafkaTemplate) {
+    public JsonProducer(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
+
     }
 
     public void sendMessage(User user){
@@ -65,13 +68,21 @@ public class JsonProducer {
 
     }
 
-    public List<Task> getTasks (Integer id) throws ExecutionException, InterruptedException, TimeoutException {
+    public List<Object> getTasks (Integer id) throws ExecutionException, InterruptedException, TimeoutException {
         LOGGER.info(String.format("Message sent: %s"), id);
 
-        Message<Integer> msg = MessageBuilder
+        //RequestReplyFuture<String, Object, List<Object>> future= template.sendAndReceive(new ProducerRecord<>("task_json", 0, null,id));
+        //List<Object> tasks = future.get(10, TimeUnit.SECONDS).value();
+
+       /* Message<Integer> msg = MessageBuilder
                 .withPayload(id)
                 .setHeader(KafkaHeaders.TOPIC,"task_json")
-                .build();
+                .build();*/
+        //kafkaTemplate.send(msg);
+
+        /*Flux<Task> clientFlux = WebClient.create().get().uri("http://localhost:8080/api/kafka/all/"+id).retrieve()
+                .bodyToFlux(Task.class);*/
+       // clientFlux.subscribe(task -> LOGGER.info(String.format(task.toString())));
 
 
         return null;
@@ -79,18 +90,17 @@ public class JsonProducer {
     }
 
 
-    public void update(String title, String status) {
-        LOGGER.info(String.format("Message sent: %s , %s",title,status));
+    public void update( String m) {
+        LOGGER.info(String.format("Message sent: %s ",m));
 
 
         Message<String> msg = MessageBuilder
-                .withPayload(title)
+                .withPayload(m)
                 .setHeader(KafkaHeaders.TOPIC,"javat")
                 .build();
-        Message<String> msg2 = MessageBuilder
-                .withPayload(status)
-                .setHeader(KafkaHeaders.TOPIC,"javat")
-                .build();
+
+
+
 
         kafkaTemplate.send(msg);
 

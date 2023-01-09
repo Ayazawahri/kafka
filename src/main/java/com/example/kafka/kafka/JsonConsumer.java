@@ -4,6 +4,7 @@ import com.example.kafka.model.Task;
 import com.example.kafka.model.User;
 import com.example.kafka.repository.TaskRepository;
 import com.example.kafka.repository.UserRepository;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -53,12 +54,13 @@ public class JsonConsumer {
     }
 
     @KafkaListener(topics ="javat",groupId = "group")
-    public void updateTask(Integer id, String status) throws Exception {
-
+    public void updateTask(String msg) throws Exception {
+        JSONObject jsonObject = new JSONObject(msg);
+        Integer id = Integer.parseInt(jsonObject.getString("id"));
+        String status = jsonObject.getString("status");
+        LOGGER.info(String.format("User message received %s %s",id,status));
         Task t = taskRepository.findByTaskId(id);
         t.setStatus(status);
-
-
-      taskRepository.save(t);
+        taskRepository.save(t);
     }
 }

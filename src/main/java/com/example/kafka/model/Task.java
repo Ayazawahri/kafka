@@ -10,9 +10,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer taskId;
-    private boolean done;
-    private boolean to_do;
-    private boolean in_progress;
+
 
     private String title;
     private String description;
@@ -28,10 +26,8 @@ public class Task {
         this.uid = uid;
     }
 
-    public Task(boolean done, boolean to_do, boolean in_progress, String title, String description, int uid, User user) {
-        this.done = done;
-        this.to_do = to_do;
-        this.in_progress = in_progress;
+    public Task( String title, String description, int uid, User user) {
+
         this.title = title;
         this.description = description;
         this.uid = uid;
@@ -55,30 +51,6 @@ public class Task {
 
     public Integer getTaskId() {
         return taskId;
-    }
-
-    public boolean isDone() {
-        return done;
-    }
-
-    public void setDone(boolean done) {
-        this.done = done;
-    }
-
-    public boolean isTo_do() {
-        return to_do;
-    }
-
-    public void setTo_do(boolean to_do) {
-        this.to_do = to_do;
-    }
-
-    public boolean isIn_progress() {
-        return in_progress;
-    }
-
-    public void setIn_progress(boolean in_progress) {
-        this.in_progress = in_progress;
     }
 
     public User getUser() {
